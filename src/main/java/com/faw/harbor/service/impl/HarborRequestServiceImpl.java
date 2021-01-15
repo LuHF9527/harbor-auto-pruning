@@ -37,7 +37,7 @@ public class HarborRequestServiceImpl implements HarborRequest {
      * harbor管理员账户
      */
     private final String harborAdminUsername = "admin";
-    private final String harborAdminPassword = "JFpwd@2019";
+    private final String harborAdminPassword = "****";
 
     @Override
     public void createUser(HarborUser harborUser) {
