@@ -1,11 +1,7 @@
 package com.faw.harbor.service.impl;
 
 import com.faw.harbor.config.HarborConfig;
-import com.faw.harbor.dtos.HarborProject;
 import com.faw.harbor.dtos.HarborUser;
-import com.faw.harbor.dtos.ImagesTags;
-import com.faw.harbor.dtos.Repositories;
-import com.faw.harbor.jobs.HarborPrunningJob;
 import com.faw.harbor.service.HarborRequest;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -31,13 +27,13 @@ public class HarborRequestServiceImpl implements HarborRequest {
     @Autowired
     HarborConfig harborConfig;
 
-    private static final Logger log = LoggerFactory.getLogger(HarborPrunningJob.class);
+    private static final Logger log = LoggerFactory.getLogger(HarborRequestServiceImpl.class);
 
     /**
      * harbor管理员账户
      */
-    private final String harborAdminUsername = "admin";
-    private final String harborAdminPassword = "****";
+    private final String harborAdminUsername = "app";
+    private final String harborAdminPassword = "111aaaBBB";
 
     @Override
     public void createUser(HarborUser harborUser) {
@@ -115,9 +111,9 @@ public class HarborRequestServiceImpl implements HarborRequest {
     }
 
     @Override
-    public List<Repositories> queryImagesByProjectId(Integer projectId) {
+    public List<String> queryImagesByProjectId(Integer projectId) {
         //url
-        String url = harborConfig.getApi() + "/api/repositories?page=1&page_size=1000&project_id=" + projectId;
+        String url = harborConfig.getApi() + "/api/repositories?page=2&page_size=1000&project_id=" + projectId;
 
         //设置header和认证
         HttpHeaders headers = createHeaders(harborAdminUsername,harborAdminPassword);
@@ -130,7 +126,7 @@ public class HarborRequestServiceImpl implements HarborRequest {
 
         headers.setContentType(MediaType.APPLICATION_JSON);
         //提交请求
-        ResponseEntity<List<Repositories>> resp = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<List<Repositories>>(){});
+        ResponseEntity<List<String>> resp = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<List<String>>(){});
 
         if (resp.getStatusCode().value() == 200){
             return resp.getBody();
@@ -142,9 +138,9 @@ public class HarborRequestServiceImpl implements HarborRequest {
     }
 
     @Override
-    public List<ImagesTags> queryImagesTagsByImageName(String imageName) {
+    public List<String> queryImagesTagsByImageName(String imageName) {
         //url
-        String url = harborConfig.getApi() + "/api/repositories/" + imageName + "/tags";
+        String url = harborConfig.getApi() + "/api/repositories/tags?repo_name=" + imageName;
 
         //设置header和认证
         HttpHeaders headers = createHeaders(harborAdminUsername,harborAdminPassword);
@@ -156,7 +152,7 @@ public class HarborRequestServiceImpl implements HarborRequest {
         restTemplate = new RestTemplate();
 
         //提交请求
-        ResponseEntity<List<ImagesTags>> resp = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<List<ImagesTags>>(){});
+        ResponseEntity<List<String>> resp = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<List<String>>(){});
         if (resp.getStatusCode().value() == 200){
             return resp.getBody();
         }else {
@@ -168,8 +164,8 @@ public class HarborRequestServiceImpl implements HarborRequest {
 
     @Override
     public void deleteImageTagsByName(String repositoryName, String tagName) {
-        //url
-        String url = harborConfig.getApi() + "/api/repositories/" + repositoryName + "/tags/"+tagName;
+        //http://10.161.12.90:8443/api/repositories?repo_name=iap_docker%2Fspringboot_alert&tag=201801261105
+        String url = harborConfig.getApi() + "/api/repositories?repo_name=" + repositoryName + "&tag="+tagName;
 
         //设置header和认证
         HttpHeaders headers = createHeaders(harborAdminUsername,harborAdminPassword);
@@ -194,7 +190,7 @@ public class HarborRequestServiceImpl implements HarborRequest {
      * Authorization Basic认证
      * @return
      */
-    private static HttpHeaders createHeaders(String username, String password) {
+    public  static HttpHeaders createHeaders(String username, String password) {
         return new HttpHeaders() {
             {
                 String auth = username + ":" + password;
@@ -203,4 +199,5 @@ public class HarborRequestServiceImpl implements HarborRequest {
             }
         };
     }
+
 }

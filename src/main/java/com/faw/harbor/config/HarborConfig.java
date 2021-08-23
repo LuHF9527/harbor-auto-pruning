@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class HarborConfig {
-    private String api = "http://10.43.4.130";
+    private String api = "http://10.161.12.90:8443";
     public String getApi() {
         return api;
     }
